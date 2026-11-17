@@ -1,37 +1,173 @@
-﻿using App.Read;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq;
+using App.Models;
 
 namespace App.Logic
 {
     internal class LogicFine
     {
-        
-        
-        static public List<int> CalcFines(List<string[]> data, int reportDay)
+        public static ReportResult BuildReport(ReportData report)
         {
-            List<int> Fines = new List<int>();
-            for (int i = 0; i < data.Count; i++)
-            {
-                int LoanDays = 0;
-                for (int j = 0; j < data[i].Length; j++)
-                {
-                    if (data[i][5] == "")
-                        data[i][5] = reportDay.ToString();
-                    LoanDays = int.Parse(data[i][5]) - int.Parse(data[i][4]);
+            ReportResult result = new ReportResult();
+            if (report == null)
+                return result;
 
-                    if (LoanDays > 14)
-                    {
-                        Fines.Add(LoanDays - 14);
-                    }
-                    else
-                        Fines.Add(0);
+            result.Errors.AddRange(report.Errors);
+
+            HashSet<int> flaggedReaderIds = new HashSet<int>();
+            Dictionary<int, ReaderFine> finesByReader = new Dictionary<int, ReaderFine>();
+
+            foreach (Loan loan in report.Loans)
+            {
+                int fine = CalculateLoanFine(loan, report.ReportDay);
+                if (finesByReader.TryGetValue(loan.Reader.Id, out ReaderFine? readerFine))
+                {
+                    readerFine.Fine += fine;
                 }
+                else
+                {
+                    finesByReader.Add(loan.Reader.Id, new ReaderFine
+                    {
+                        Reader = loan.Reader,
+                        Fine = fine
+                    });
+                }
+
+                result.TotalFine += fine;
+
+                if (!loan.IsReturned && report.ReportDay - loan.LoanDay > 60 && flaggedReaderIds.Add(loan.Reader.Id))
+                    result.Flagged.Add(loan.Reader);
+
+                if (!loan.IsReturned && IsOverdue(loan, report.ReportDay) && !result.AtRisk.Any(reader => reader.Id == loan.Reader.Id))
+                    result.AtRisk.Add(loan.Reader);
             }
-            return Fines;
+
+            result.Fines.AddRange(finesByReader.Values
+                .OrderByDescending(readerFine => readerFine.Fine)
+                .ThenBy(readerFine => readerFine.Reader.Id));
+
+            result.Flagged.Sort((left, right) => left.Id.CompareTo(right.Id));
+            result.AtRisk.Sort((left, right) => left.Id.CompareTo(right.Id));
+
+            foreach (IGrouping<string, Loan> bookLoans in report.Loans.GroupBy(loan => loan.Book).OrderByDescending(group => group.Count()).ThenBy(group => group.Key, StringComparer.Ordinal))
+                result.TopBooks.Add(new Book { Name = bookLoans.Key, Count = bookLoans.Count() });
+
+            return result;
         }
 
+        public static List<int> CalcFines(List<string[]> data, int reportDay)
+        {
+            List<int> fines = new List<int>();
+            if (data == null)
+                return fines;
+
+            foreach (string[] row in data)
+                fines.Add(CalcFine(row, reportDay));
+
+            return fines;
+        }
+
+        public static int FineStudent(string[] row, int reportDay)
+        {
+            return CalculateFine(row, reportDay, 14, 1, 30);
+        }
+
+        public static int FineTeacher(string[] row, int reportDay)
+        {
+            return CalculateFine(row, reportDay, 60, 0, 0);
+        }
+
+        public static int FineGuest(string[] row, int reportDay)
+        {
+            return CalculateFine(row, reportDay, 7, 2, 0);
+        }
+
+        public static int FineAlumna(string[] row, int reportDay)
+        {
+            return CalculateFine(row, reportDay, 30, 1, 30);
+        }
+
+        private static int CalcFine(string[] row, int reportDay)
+        {
+            if (row == null || row.Length < 5 || string.IsNullOrWhiteSpace(row[2]))
+                return 0;
+
+            switch (row[2].Trim().ToLowerInvariant())
+            {
+                case "student":
+                    return FineStudent(row, reportDay);
+                case "teacher":
+                    return FineTeacher(row, reportDay);
+                case "guest":
+                    return FineGuest(row, reportDay);
+                case "alumna":
+                    return FineAlumna(row, reportDay);
+                default:
+                    return 0;
+            }
+        }
+
+        private static int CalculateLoanFine(Loan loan, int reportDay)
+        {
+            int allowedDays;
+            int finePerDay;
+            int maximumFine;
+
+            switch (loan.Reader.Type)
+            {
+                case "student":
+                    allowedDays = 14;
+                    finePerDay = 1;
+                    maximumFine = 30;
+                    break;
+                case "teacher":
+                    allowedDays = 60;
+                    finePerDay = 0;
+                    maximumFine = 0;
+                    break;
+                case "guest":
+                    allowedDays = 7;
+                    finePerDay = 2;
+                    maximumFine = 0;
+                    break;
+                case "alumna":
+                    allowedDays = 30;
+                    finePerDay = 1;
+                    maximumFine = 30;
+                    break;
+                default:
+                    return 0;
+            }
+
+            int endDay = loan.ReturnDay ?? reportDay;
+            return CalculateFine(endDay - loan.LoanDay, allowedDays, finePerDay, maximumFine);
+        }
+
+        private static bool IsOverdue(Loan loan, int reportDay)
+        {
+            return CalculateLoanFine(loan, reportDay) > 0;
+        }
+
+        private static int CalculateFine(string[] row, int reportDay, int allowedDays, int finePerDay, int maximumFine)
+        {
+            if (row == null || row.Length < 5 || !int.TryParse(row[4], out int loanDay))
+                return 0;
+
+            int endDay = reportDay;
+            if (row.Length >= 6 && !string.IsNullOrWhiteSpace(row[5]) && !int.TryParse(row[5], out endDay))
+                return 0;
+
+            return CalculateFine(endDay - loanDay, allowedDays, finePerDay, maximumFine);
+        }
+
+        private static int CalculateFine(int loanDays, int allowedDays, int finePerDay, int maximumFine)
+        {
+            if (finePerDay == 0 || loanDays <= allowedDays)
+                return 0;
+
+            int fine = (loanDays - allowedDays) * finePerDay;
+            return maximumFine > 0 ? Math.Min(fine, maximumFine) : fine;
+        }
     }
 }

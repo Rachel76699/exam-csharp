@@ -1,47 +1,28 @@
-using App.Logic;
-using App.Read;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using App.Logic;
+using App.Print;
+using App.Read;
 
-
-// The exam program. It gets the path of an input file, and prints the report.
-// Run it from the exam folder:  python check/run_checks.py run
-// Without a path, it reads data/sample.txt.
 class Program
 {
     static void Main(string[] args)
     {
-        //// Hebrew is printed as UTF-8, also on Windows
-        //Console.OutputEncoding = new UTF8Encoding(false);
-        //string path = args.Length > 0 ? args[0] : ReadFile.FindSample();
-        //string[] lines = File.ReadAllLines(path, Encoding.UTF8);
-        //int reportDay = ReadFile.ReadReportDay(lines);
-        //List<string[]> rows = ReadFile.ReadRows(lines);
-        //Console.Error.WriteLine("skeleton ok: read " + Path.GetFileName(path) + " - report day " + reportDay + " - " + rows.Count + " rows");
-        // Write your code here. 'reportDay' and 'rows' are ready.
+        Console.OutputEncoding = new UTF8Encoding(false);
+        string path = args.Length > 0 ? args[0] : ReadFile.FindSample();
 
-
-        ReadFile r = new ReadFile();
-        List<string[]> data = ReadFile.rows;
-        int reportDay = ReadFile.reportDay;
-
-
-        List<int> Fines = LogicFine.CalcFines(data, reportDay);
-
-        foreach (var item in Fines)
+        try
         {
-            Console.WriteLine(item);
+            if (!File.Exists(path))
+                throw new FileNotFoundException("Input file was not found", path);
+
+            PrintResults.Print(LogicFine.BuildReport(ReadFile.ReadReport(path)));
         }
-
-
-
-        Console.WriteLine();
-
-
-
-
+        catch (Exception exception) when (exception is IOException || exception is FormatException)
+        {
+            Console.Error.WriteLine(exception.Message);
+            Environment.ExitCode = 1;
+        }
     }
-
 }
