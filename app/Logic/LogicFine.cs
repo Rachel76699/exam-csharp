@@ -74,7 +74,7 @@ namespace App.Logic
 
         public static int FineStudent(string[] row, int reportDay)
         {
-            return CalculateFine(row, reportDay, 14, 1, 30);
+            return CalculateFine(row, reportDay, 14, 1, 40);
         }
 
         public static int FineTeacher(string[] row, int reportDay)
@@ -96,7 +96,14 @@ namespace App.Logic
 
         public static int FineAlumna(string[] row, int reportDay)
         {
-            return CalculateFine(row, reportDay, 30, 1, 30);
+            if (row == null || row.Length < 5 || !int.TryParse(row[4], out int loanDay))
+                return 0;
+
+            int endDay = reportDay;
+            if (row.Length >= 6 && !string.IsNullOrWhiteSpace(row[5]) && !int.TryParse(row[5], out endDay))
+                return 0;
+
+            return CalculateAlumnaFine(endDay - loanDay);
         }
 
         private static int CalcFine(string[] row, int reportDay)
@@ -130,7 +137,7 @@ namespace App.Logic
                 case "student":
                     allowedDays = 14;
                     finePerDay = 1;
-                    maximumFine = 30;
+                    maximumFine = 40;
                     break;
                 case "teacher":
                     allowedDays = 60;
@@ -141,10 +148,8 @@ namespace App.Logic
                     int guestEndDay = loan.ReturnDay ?? reportDay;
                     return CalculateGuestFine(guestEndDay - loan.LoanDay);
                 case "alumna":
-                    allowedDays = 30;
-                    finePerDay = 1;
-                    maximumFine = 30;
-                    break;
+                    int alumnaEndDay = loan.ReturnDay ?? reportDay;
+                    return CalculateAlumnaFine(alumnaEndDay - loan.LoanDay);
                 default:
                     return 0;
             }
@@ -186,6 +191,15 @@ namespace App.Logic
 
             int lateDays = loanDays - 7;
             return (lateDays * 5 + 1) / 2;
+        }
+
+        private static int CalculateAlumnaFine(int loanDays)
+        {
+            if (loanDays <= 10)
+                return 0;
+
+            int lateDays = loanDays - 10;
+            return Math.Min(25, (lateDays * 3 + 1) / 2);
         }
     }
 }

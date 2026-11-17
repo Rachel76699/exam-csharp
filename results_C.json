@@ -1,0 +1,248 @@
+{
+ "kind": "placement-results",
+ "version": 1,
+ "mode": "C",
+ "lang": "csharp",
+ "created": "2026-11-17T17:23:19",
+ "created_epoch": 1794928999452,
+ "at": null,
+ "build": {
+  "ok": true,
+  "output": "Build succeeded.\n    5 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:02.14",
+  "ms": 2324
+ },
+ "runs": [
+  {
+   "file": "check1a.txt",
+   "exit": 0,
+   "timed_out": false,
+   "ms": 59,
+   "stdout": "FINES\r\nreader_id,name,fine\r\n108,‫טובה מזרחי‬,100\r\n113,‫זהבה אורן‬,60\r\n105,‫הדסה וולף‬,30\r\n121,‫גאולה חדד‬,18\r\n107,‫יעל אדלר‬,8\r\n112,‫בינה קליין‬,8\r\n101,‫צביה לוין‬,6\r\n106,‫חנה רוזן‬,6\r\n114,‫מיכל דהן‬,4\r\n115,‫אורית שמש‬,4\r\n104,‫דינה שטרן‬,2\r\n103,‫שירה גבאי‬,1\r\n102,‫תהילה כץ‬,0\r\n109,‫רבקה פישר‬,0\r\n110,‫פנינה עזרא‬,0\r\n111,‫נחמה ברגר‬,0\r\nFLAGGED\r\nreader_id,name\r\n110,‫פנינה עזרא‬\r\nERRORS\r\nreader_id,name,error\r\nTOTAL,247\r\nTOP_BOOKS\r\nbook,count\r\n‫איסתרק‬,8\r\n‫קיצור שולחן ערוך‬,6\r\n‫עולם חירש‬,4\r\nAT_RISK\r\nreader_id,name\r\n106,‫חנה רוזן‬\r\n",
+   "stderr_tail": "",
+   "decode_problem": false
+  },
+  {
+   "file": "check1b.txt",
+   "exit": 0,
+   "timed_out": false,
+   "ms": 51,
+   "stdout": "FINES\r\nreader_id,name,fine\r\n132,‫עדי פרלמן‬,5\r\n131,‫לאה גולן‬,3\r\n136,‫שפרה ליפשיץ‬,0\r\n137,‫אסתר כרמי‬,0\r\nFLAGGED\r\nreader_id,name\r\nERRORS\r\nreader_id,name,error\r\n133,‫מלכה נחום‬,return_day before loan_day\r\n134,‫נעמי סגל‬,wrong number of fields\r\n135,‫ענבל פרץ‬,invalid reader type\r\nTOTAL,8\r\nTOP_BOOKS\r\nbook,count\r\n‫איסתרק‬,1\r\n‫להשאר יהודי‬,1\r\n‫עולם חירש‬,1\r\nAT_RISK\r\nreader_id,name\r\n",
+   "stderr_tail": "",
+   "decode_problem": false
+  }
+ ],
+ "sample_run": {
+  "file": "sample.txt",
+  "exit": 0,
+  "timed_out": false,
+  "ms": 51,
+  "stdout": "FINES\r\nreader_id,name,fine\r\n12,‫מרים לוי‬,30\r\n31,‫לאה רוזן‬,8\r\n11,‫רחל כהן‬,2\r\n21,‫שרה גולד‬,0\r\nFLAGGED\r\nreader_id,name\r\n12,‫מרים לוי‬\r\n21,‫שרה גולד‬\r\nERRORS\r\nreader_id,name,error\r\n13,‫דינה אבן‬,return_day before loan_day\r\nTOTAL,40\r\nTOP_BOOKS\r\nbook,count\r\n‫עולם חירש‬,2\r\n‫איסתרק‬,1\r\n‫להשאר יהודי‬,1\r\nAT_RISK\r\nreader_id,name\r\n12,‫מרים לוי‬\r\n",
+  "stderr_tail": "",
+  "decode_problem": false
+ },
+ "warnings": [],
+ "files": [
+  {
+   "path": "app/Logic/LogicFine.cs",
+   "lines": 191,
+   "classes": [
+    "LogicFine"
+   ],
+   "functions": [
+    {
+     "name": "BuildReport",
+     "lines": 52
+    },
+    {
+     "name": "CalcFines",
+     "lines": 11
+    },
+    {
+     "name": "FineStudent",
+     "lines": 4
+    },
+    {
+     "name": "FineTeacher",
+     "lines": 4
+    },
+    {
+     "name": "FineGuest",
+     "lines": 11
+    },
+    {
+     "name": "FineAlumna",
+     "lines": 4
+    },
+    {
+     "name": "CalcFine",
+     "lines": 19
+    },
+    {
+     "name": "CalculateLoanFine",
+     "lines": 33
+    },
+    {
+     "name": "IsOverdue",
+     "lines": 4
+    },
+    {
+     "name": "CalculateFine",
+     "lines": 11
+    },
+    {
+     "name": "CalculateFine",
+     "lines": 8
+    },
+    {
+     "name": "CalculateGuestFine",
+     "lines": 8
+    }
+   ],
+   "type_ifs": 8
+  },
+  {
+   "path": "app/Models/Book.cs",
+   "lines": 8,
+   "classes": [
+    "Book"
+   ],
+   "functions": [],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Models/ErrorRow.cs",
+   "lines": 11,
+   "classes": [
+    "ErrorRow"
+   ],
+   "functions": [],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Models/Loan.cs",
+   "lines": 13,
+   "classes": [
+    "Loan"
+   ],
+   "functions": [],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Models/Reader.cs",
+   "lines": 9,
+   "classes": [
+    "Reader"
+   ],
+   "functions": [],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Models/ReaderFine.cs",
+   "lines": 8,
+   "classes": [
+    "ReaderFine"
+   ],
+   "functions": [],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Models/ReportData.cs",
+   "lines": 11,
+   "classes": [
+    "ReportData"
+   ],
+   "functions": [],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Models/ReportResult.cs",
+   "lines": 14,
+   "classes": [
+    "ReportResult"
+   ],
+   "functions": [],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Print/PrintResults.cs",
+   "lines": 65,
+   "classes": [
+    "PrintResults"
+   ],
+   "functions": [
+    {
+     "name": "Format",
+     "lines": 36
+    },
+    {
+     "name": "Print",
+     "lines": 4
+    },
+    {
+     "name": "RightToLeft",
+     "lines": 13
+    }
+   ],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Program.cs",
+   "lines": 28,
+   "classes": [
+    "Program"
+   ],
+   "functions": [
+    {
+     "name": "Main",
+     "lines": 18
+    }
+   ],
+   "type_ifs": 0
+  },
+  {
+   "path": "app/Read/ReadFile.cs",
+   "lines": 177,
+   "classes": [
+    "ReadFile"
+   ],
+   "functions": [
+    {
+     "name": "ReadFile",
+     "lines": 3
+    },
+    {
+     "name": "ReadFile",
+     "lines": 7
+    },
+    {
+     "name": "ReadReportDay",
+     "lines": 11
+    },
+    {
+     "name": "ReadRows",
+     "lines": 19
+    },
+    {
+     "name": "ReadReport",
+     "lines": 34
+    },
+    {
+     "name": "TryParseLoan",
+     "lines": 69
+    },
+    {
+     "name": "FindSample",
+     "lines": 13
+    }
+   ],
+   "type_ifs": 1
+  }
+ ],
+ "git": {
+  "available": true,
+  "commit": "1f643f1",
+  "note": "nothing new to commit",
+  "log": "538bf9a|2026-11-17 13:45:43 +0200|start\nfe06be3|2026-11-17 16:13:27 +0200|level 1\n01fd659|2026-11-17 17:02:53 +0200|level 2\neb4cf8f|2026-11-17 17:07:09 +0200|level 3\n1f643f1|2026-11-17 17:21:11 +0200|level 4",
+  "numstat": "commit|538bf9a|start\n\n7\t0\t.gitignore\n55\t0\tapp/Program.cs\n11\t0\tapp/app.csproj\n449\t0\tcheck/run_checks.py\n8\t0\tdata/sample.txt\ncommit|fe06be3|level 1\n\n37\t0\tapp/Logic/LogicFine.cs\n27\t35\tapp/Program.cs\n54\t0\tapp/Read/ReadFile.cs\n6\t0\tapp/app.csproj\n3\t0\tapp/app.slnx\n449\t0\tapp/check/run_checks.py\n8\t0\tapp/data/sample.txt\ncommit|01fd659|level 2\n\n157\t21\tapp/Logic/LogicFine.cs\n8\t0\tapp/Models/Book.cs\n11\t0\tapp/Models/ErrorRow.cs\n13\t0\tapp/Models/Loan.cs\n9\t0\tapp/Models/Reader.cs\n8\t0\tapp/Models/ReaderFine.cs\n11\t0\tapp/Models/ReportData.cs\n14\t0\tapp/Models/ReportResult.cs\n65\t0\tapp/Print/PrintResults.cs\n15\t34\tapp/Program.cs\n143\t20\tapp/Read/ReadFile.cs\n1\t1\tapp/app.csproj\ncommit|eb4cf8f|level 3\n\n4\t0\t.github/copilot-instructions.md\n19\t5\tapp/Logic/LogicFine.cs\ncommit|1f643f1|level 4\n\n5\t1\tapp/Logic/LogicFine.cs\n167\t0\tconversation.txt"
+ }
+}
