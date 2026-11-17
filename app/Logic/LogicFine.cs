@@ -50,7 +50,11 @@ namespace App.Logic
             result.Flagged.Sort((left, right) => left.Id.CompareTo(right.Id));
             result.AtRisk.Sort((left, right) => left.Id.CompareTo(right.Id));
 
-            foreach (IGrouping<string, Loan> bookLoans in report.Loans.GroupBy(loan => loan.Book).OrderByDescending(group => group.Count()).ThenBy(group => group.Key, StringComparer.Ordinal))
+            foreach (IGrouping<string, Loan> bookLoans in report.Loans
+                .GroupBy(loan => loan.Book)
+                .OrderByDescending(group => group.Count())
+                .ThenBy(group => group.Key, StringComparer.Ordinal)
+                .Take(3))
                 result.TopBooks.Add(new Book { Name = bookLoans.Key, Count = bookLoans.Count() });
 
             return result;
