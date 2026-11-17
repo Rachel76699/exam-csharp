@@ -80,7 +80,14 @@ namespace App.Logic
 
         public static int FineGuest(string[] row, int reportDay)
         {
-            return CalculateFine(row, reportDay, 7, 2, 0);
+            if (row == null || row.Length < 5 || !int.TryParse(row[4], out int loanDay))
+                return 0;
+
+            int endDay = reportDay;
+            if (row.Length >= 6 && !string.IsNullOrWhiteSpace(row[5]) && !int.TryParse(row[5], out endDay))
+                return 0;
+
+            return CalculateGuestFine(endDay - loanDay);
         }
 
         public static int FineAlumna(string[] row, int reportDay)
@@ -127,10 +134,8 @@ namespace App.Logic
                     maximumFine = 0;
                     break;
                 case "guest":
-                    allowedDays = 7;
-                    finePerDay = 2;
-                    maximumFine = 0;
-                    break;
+                    int guestEndDay = loan.ReturnDay ?? reportDay;
+                    return CalculateGuestFine(guestEndDay - loan.LoanDay);
                 case "alumna":
                     allowedDays = 30;
                     finePerDay = 1;
@@ -168,6 +173,15 @@ namespace App.Logic
 
             int fine = (loanDays - allowedDays) * finePerDay;
             return maximumFine > 0 ? Math.Min(fine, maximumFine) : fine;
+        }
+
+        private static int CalculateGuestFine(int loanDays)
+        {
+            if (loanDays <= 7)
+                return 0;
+
+            int lateDays = loanDays - 7;
+            return (lateDays * 5 + 1) / 2;
         }
     }
 }
